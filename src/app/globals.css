@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: #f8f9fc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --brand: #6366f1;
+    --brand-hover: #4f46e5;
+    --sidebar-bg: #0f0f14;
+    --sidebar-text: #a1a1aa;
+    --sidebar-active: #6366f1;
+  }
+
+  .dark {
+    --bg: #09090b;
+    --surface: #111113;
+    --border: #27272a;
+    --text: #fafafa;
+    --text-muted: #71717a;
+    --brand: #818cf8;
+    --brand-hover: #6366f1;
+    --sidebar-bg: #09090b;
+    --sidebar-text: #71717a;
+    --sidebar-active: #818cf8;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl;
+  }
+
+  .btn-primary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors;
+  }
+
+  .input {
+    @apply w-full px-3 py-2 text-sm bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors;
+  }
+
+  .label {
+    @apply block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1.5;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #52525b; border-radius: 4px; }
