@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -24,6 +24,12 @@ export default function LoginPage() {
   const callbackError = searchParams.get("error");
   const supabase = createClient();
 
+  useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => {
+    if (data.session) router.replace("/dashboard");
+  });
+}, []);
+
   const {
     register,
     handleSubmit,
@@ -46,7 +52,7 @@ export default function LoginPage() {
         setError(error.message);
       }
     } else {
-      router.push(next);
+      router.replace(next);
       router.refresh();
     }
   }

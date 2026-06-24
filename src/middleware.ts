@@ -25,7 +25,7 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // ⚠️ Always use getUser() (not getSession()) — it validates against Supabase server
+  // Always use getUser() — validates server-side, never trusts cached session
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -33,19 +33,29 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isAuthRoute = pathname.startsWith("/auth/");
 
-  // Not logged in → redirect to login (except auth pages themselves)
-  if (!user && !isAuthRoute) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/auth/login";
-    loginUrl.searchParams.set("next", pathname); // preserve intended destination
-    return NextResponse.redirect(loginUrl);
+  // No cache for protected pages — this is what prevents back-button bypass
+  if (!isAuthRoute) {
+    supabaseResponse.headers.set(
+      "Cache-Control",
+      "no-store, no-cache, must-revalidate, proxy-revalidate"
+    );
+    supabaseResponse.headers.set("Pragma", "no-cache");
+    supabaseResponse.headers.set("Expires", "0");
   }
 
-  // Already logged in → don't let them see login/signup
+  // Unauthenticated → redirect to login, preserve intended destination
+  if (!user && !isAuthRoute) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/login";
+    url.searchParams.set("next", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  // Already logged in → don't show auth pages
   if (user && isAuthRoute && pathname !== "/auth/callback") {
-    const dashboardUrl = request.nextUrl.clone();
-    dashboardUrl.pathname = "/dashboard";
-    return NextResponse.redirect(dashboardUrl);
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
   }
 
   return supabaseResponse;
@@ -53,7 +63,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run on everything EXCEPT Next.js internals and static files
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
